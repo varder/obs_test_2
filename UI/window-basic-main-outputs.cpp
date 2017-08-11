@@ -155,6 +155,7 @@ static bool CreateAACEncoder(OBSEncoder &res, string &id, int bitrate,
 		const char *name, size_t idx)
 {
 	const char *id_ = GetAACEncoderForBitrate(bitrate);
+    qDebug() << "id GetAACEncoderForBitrate" << id_;
 	if (!id_) {
 		id.clear();
 		res = nullptr;
@@ -271,7 +272,7 @@ void SimpleOutput::LoadRecordingPreset()
 			"RecQuality");
 	const char *encoder = config_get_string(main->Config(), "SimpleOutput",
 			"RecEncoder");
-
+    qDebug() << "quality " << quality << encoder;
 	videoEncoder = encoder;
 	videoQuality = quality;
 	ffmpegOutput = false;
@@ -314,16 +315,19 @@ void SimpleOutput::LoadRecordingPreset()
 
 SimpleOutput::SimpleOutput(OBSBasic *main_) : BasicOutputHandler(main_)
 {
-	const char *encoder = config_get_string(main->Config(), "SimpleOutput",
-			"StreamEncoder");
-	if (strcmp(encoder, SIMPLE_ENCODER_QSV) == 0)
-		LoadStreamingPreset_h264("obs_qsv11");
-	else if (strcmp(encoder, SIMPLE_ENCODER_AMD) == 0)
-		LoadStreamingPreset_h264("amd_amf_h264");
-	else if (strcmp(encoder, SIMPLE_ENCODER_NVENC) == 0)
-		LoadStreamingPreset_h264("ffmpeg_nvenc");
-	else
-		LoadStreamingPreset_h264("obs_x264");
+
+//	const char *encoder = config_get_string(main->Config(), "SimpleOutput",
+//			"StreamEncoder");
+//    qDebug() << "encoder " << encoder;
+//    if (strcmp(encoder, SIMPLE_ENCODER_QSV) == 0)
+//		LoadStreamingPreset_h264("obs_qsv11");
+//	else if (strcmp(encoder, SIMPLE_ENCODER_AMD) == 0)
+//		LoadStreamingPreset_h264("amd_amf_h264");
+//	else if (strcmp(encoder, SIMPLE_ENCODER_NVENC) == 0)
+//		LoadStreamingPreset_h264("ffmpeg_nvenc");
+//	else
+
+    LoadStreamingPreset_h264("obs_x264");
 
 	if (!CreateAACEncoder(aacStreaming, aacStreamEncID, GetAudioBitrate(),
 				"simple_aac", 0))
@@ -378,6 +382,7 @@ int SimpleOutput::GetAudioBitrate() const
 {
 	int bitrate = (int)config_get_uint(main->Config(), "SimpleOutput",
 			"ABitrate");
+    qDebug() << "bitrate  " << bitrate;
 
 	return FindClosestAvailableAACBitrate(bitrate);
 }
@@ -805,7 +810,7 @@ void SimpleOutput::UpdateRecording()
 
 	if (!ffmpegOutput) {
 		obs_output_set_video_encoder(fileOutput, h264Recording);
-		obs_output_set_audio_encoder(fileOutput, aacRecording, 0);
+        obs_output_set_audio_encoder(fileOutput, aacRecording, 0);
 	}
 //	if (replayBuffer) {
 //		obs_output_set_video_encoder(replayBuffer, h264Recording);

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "audio-encoders.hpp"
-#include "obs-app.hpp"
-#include "window-main.hpp"
+//#include "obs-app.hpp"
+//#include "window-main.hpp"
 
 using namespace std;
 
@@ -83,19 +83,19 @@ static void HandleSampleRate(obs_property_t* prop, const char *id)
 		return;
 	}
 
-	auto main = reinterpret_cast<OBSMainWindow*>(App()->GetMainWindow());
-	if (!main) {
-		blog(LOG_ERROR, "Failed to get main window while populating "
-				"bitrate map");
-		return;
-	}
+//	auto main = reinterpret_cast<OBSMainWindow*>(App()->GetMainWindow());
+//	if (!main) {
+//		blog(LOG_ERROR, "Failed to get main window while populating "
+//				"bitrate map");
+//		return;
+//	}
 
-	uint32_t sampleRate = config_get_uint(main->Config(), "Audio",
-			"SampleRate");
+//	uint32_t sampleRate = config_get_uint(main->Config(), "Audio",
+//			"SampleRate");
 
-	obs_data_set_int(data.get(), "samplerate", sampleRate);
+//	obs_data_set_int(data.get(), "samplerate", sampleRate);
 
-	obs_property_modified(prop, data.get());
+//	obs_property_modified(prop, data.get());
 }
 
 static void HandleEncoderProperties(const char *id)
