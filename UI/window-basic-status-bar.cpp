@@ -111,22 +111,22 @@ void OBSBasicStatusBar::Deactivate()
 		totalRecordSeconds = 0;
 	}
 
-	if (!main->outputHandler->Active()) {
-		delete refreshTimer;
+//	if (!main->outputHandler->Active()) {
+//		delete refreshTimer;
 
-		delayInfo->setText("");
-		droppedFrames->setText("");
-		kbps->setText("");
+//		delayInfo->setText("");
+//		droppedFrames->setText("");
+//		kbps->setText("");
 
-		delaySecTotal = 0;
-		delaySecStarting = 0;
-		delaySecStopping = 0;
-		reconnectTimeout = 0;
-		active = false;
-		overloadedNotify = true;
+//		delaySecTotal = 0;
+//		delaySecStarting = 0;
+//		delaySecStopping = 0;
+//		reconnectTimeout = 0;
+//		active = false;
+//		overloadedNotify = true;
 
-		statusSquare->setPixmap(transparentPixmap);
-	}
+//		statusSquare->setPixmap(transparentPixmap);
+//	}
 }
 
 void OBSBasicStatusBar::UpdateDelayMsg()
@@ -409,10 +409,10 @@ void OBSBasicStatusBar::UpdateStatusBar()
 void OBSBasicStatusBar::StreamDelayStarting(int sec)
 {
 	OBSBasic *main = qobject_cast<OBSBasic*>(parent());
-	if (!main || !main->outputHandler)
+    if (!main )//|| !main->outputHandler)
 		return;
 
-	streamOutput = main->outputHandler->streamOutput;
+//	streamOutput = main->outputHandler->streamOutput;
 
 	delaySecTotal = delaySecStarting = sec;
 	UpdateDelayMsg();

@@ -312,35 +312,7 @@ void SimpleOutput::LoadRecordingPreset()
 			      "(simple output)";
 	}
 }
-static void mcb(void *param, struct video_data *frame){
-    qDebug() << "CCCCBBB" << !!frame << frame->data[0] << frame->data;
 
-    static bool isIn = true;
-    static int cr = 0;
-    if(++cr>100){
-        cr = 0;
-        isIn = false;
-    }
-    if(!isIn){
-//            uchar * buff = new uchar[20000];
-//            memcpy(buff, (uchar*)frame->data[0], 50*50);
-
-        QImage yuvImage = QImage(frame->data[0],
-                        1280,
-                        720*1.5,
-                        QImage::Format_Indexed8);
-
-        QVector<QRgb> m_colourMap;
-        for(int i = 0; i < 256; i++)
-        {
-            m_colourMap.push_back(qRgb(i, i, i));
-        }
-        yuvImage.setColorTable(m_colourMap);
-
-        yuvImage.save("test.jpg");
-        isIn = true;
-    }
-}
 
 SimpleOutput::SimpleOutput(OBSBasic *main_) : BasicOutputHandler(main_)
 {
@@ -350,7 +322,7 @@ SimpleOutput::SimpleOutput(OBSBasic *main_) : BasicOutputHandler(main_)
     vid = obs_get_video();
 //    const video_output_info * inf = nullptr;
 //    inf = video_output_get_info(vid);
-     video_output_connect(vid, nullptr, mcb, nullptr);
+//     video_output_connect(vid, nullptr, mcb, nullptr);
 
 //	const char *encoder = config_get_string(main->Config(), "SimpleOutput",
 //			"StreamEncoder");
