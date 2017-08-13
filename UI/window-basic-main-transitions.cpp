@@ -49,25 +49,25 @@ void OBSBasic::InitDefaultTransitions()
 	/* automatically add transitions that have no configuration (things
 	 * such as cut/fade/etc) */
 	while (obs_enum_transition_types(idx++, &id)) {
-		if (!obs_is_source_configurable(id)) {
-			const char *name = obs_source_get_display_name(id);
+        if (!obs_is_source_configurable(id)) {
+            const char *name = obs_source_get_display_name(id);
 
-			obs_source_t *tr = obs_source_create_private(
-					id, name, NULL);
-			InitTransition(tr);
-			transitions.emplace_back(tr);
+            obs_source_t *tr = obs_source_create_private(
+                    id, name, NULL);
+            InitTransition(tr);
+            transitions.emplace_back(tr);
 
-			if (strcmp(id, "fade_transition") == 0)
-				fadeTransition = tr;
+            if (strcmp(id, "fade_transition") == 0)
+                fadeTransition = tr;
 
-			obs_source_release(tr);
-		}
+            obs_source_release(tr);
+        }
 	}
 
-	for (OBSSource &tr : transitions) {
-		ui->transitions->addItem(QT_UTF8(obs_source_get_name(tr)),
-				QVariant::fromValue(OBSSource(tr)));
-	}
+    for (OBSSource &tr : transitions) {
+        ui->transitions->addItem(QT_UTF8(obs_source_get_name(tr)),
+                QVariant::fromValue(OBSSource(tr)));
+    }
 }
 
 void OBSBasic::AddQuickTransitionHotkey(QuickTransition *qt)
@@ -100,18 +100,18 @@ void OBSBasic::AddQuickTransitionHotkey(QuickTransition *qt)
 
 void OBSBasic::TriggerQuickTransition(int id)
 {
-	QuickTransition *qt = GetQuickTransition(id);
+//	QuickTransition *qt = GetQuickTransition(id);
 
-	if (qt && previewProgramMode) {
-		OBSScene scene = GetCurrentScene();
-		obs_source_t *source = obs_scene_get_source(scene);
+//	if (qt && previewProgramMode) {
+//		OBSScene scene = GetCurrentScene();
+//		obs_source_t *source = obs_scene_get_source(scene);
 
-		ui->transitionDuration->setValue(qt->duration);
-		if (GetCurrentTransition() != qt->source)
-			SetTransition(qt->source);
+//		ui->transitionDuration->setValue(qt->duration);
+//		if (GetCurrentTransition() != qt->source)
+//			SetTransition(qt->source);
 
-		TransitionToScene(source);
-	}
+//		TransitionToScene(source);
+//	}
 }
 
 void OBSBasic::RemoveQuickTransitionHotkey(QuickTransition *qt)
@@ -208,22 +208,23 @@ obs_data_array_t *OBSBasic::SaveQuickTransitions()
 
 obs_source_t *OBSBasic::FindTransition(const char *name)
 {
-	for (int i = 0; i < ui->transitions->count(); i++) {
-		OBSSource tr = ui->transitions->itemData(i)
-			.value<OBSSource>();
+//	for (int i = 0; i < ui->transitions->count(); i++) {
+//		OBSSource tr = ui->transitions->itemData(i)
+//			.value<OBSSource>();
 
-		const char *trName = obs_source_get_name(tr);
-		if (strcmp(trName, name) == 0)
-			return tr;
-	}
+//		const char *trName = obs_source_get_name(tr);
+//		if (strcmp(trName, name) == 0)
+//			return tr;
+//	}
 
 	return nullptr;
 }
-
+#include <QDebug>
 void OBSBasic::TransitionToScene(OBSScene scene, bool force)
 {
+    qDebug() << "invoke transition to scene ";
 	obs_source_t *source = obs_scene_get_source(scene);
-	TransitionToScene(source, force);
+//	TransitionToScene(source, force);
 }
 
 void OBSBasic::TransitionStopped()
@@ -277,7 +278,7 @@ void OBSBasic::TransitionToScene(OBSSource source, bool force)
 	obs_source_t *transition = obs_get_output_source(0);
 
 	if (force) {
-		obs_transition_set(transition, source);
+//		obs_transition_set(transition, source);
 		if (api)
 			api->on_event(OBS_FRONTEND_EVENT_SCENE_CHANGED);
 	} else {

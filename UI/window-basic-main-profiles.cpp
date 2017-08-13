@@ -338,7 +338,7 @@ void OBSBasic::RefreshProfiles()
 void OBSBasic::ResetProfileData()
 {
 	ResetVideo();
-	service = nullptr;
+//	service = nullptr;
 	InitService();
 	ResetOutputs();
 	ClearHotkeys();

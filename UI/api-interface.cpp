@@ -3,6 +3,7 @@
 #include "qt-wrappers.hpp"
 #include "window-basic-main.hpp"
 #include "window-basic-main-outputs.hpp"
+#include <QDebug>
 
 #include <functional>
 
@@ -90,13 +91,15 @@ struct OBSStudioAPI : obs_frontend_callbacks {
 
 	void obs_frontend_set_current_scene(obs_source_t *scene) override
 	{
+        blog(2, "set curr scene ");
+//        qDebug() << "obs front curr scdene";
 		if (main->IsPreviewProgramMode()) {
-			QMetaObject::invokeMethod(main, "TransitionToScene",
-					Q_ARG(OBSSource, OBSSource(scene)));
+//			QMetaObject::invokeMethod(main, "TransitionToScene",
+//					Q_ARG(OBSSource, OBSSource(scene)));
 		} else {
-			QMetaObject::invokeMethod(main, "SetCurrentScene",
-					Q_ARG(OBSSource, OBSSource(scene)),
-					Q_ARG(bool, false));
+//			QMetaObject::invokeMethod(main, "SetCurrentScene",
+//					Q_ARG(OBSSource, OBSSource(scene)),
+//					Q_ARG(bool, false));
 		}
 	}
 
