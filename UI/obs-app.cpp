@@ -1314,7 +1314,7 @@ static auto ProfilerFree = [](void *)
 };
 
 static const char *run_program_init = "run_program_init";
-static int run_program(fstream &logFile, int argc, char *argv[])
+static int run_program(int argc, char *argv[])
 {
 	int ret = -1;
 
@@ -1327,75 +1327,32 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 	profiler_start();
 	profile_register_root(run_program_init, 0);
 
-	ScopeProfiler prof{run_program_init};
+//	ScopeProfiler prof{run_program_init};
 
-	QCoreApplication::addLibraryPath(".");
+//	QCoreApplication::addLibraryPath(".");
 
 	OBSApp program(argc, argv, profilerNameStore.get());
 	try {
 		program.AppInit();
 
-		OBSTranslator translator;
+//		OBSTranslator translator;
 
-		create_log_file(logFile);
+//		create_log_file(logFile);
 		delete_oldest_file("obs-studio/profiler_data");
 
-		program.installTranslator(&translator);
+//		program.installTranslator(&translator);
 
-#ifdef _WIN32
-		/* --------------------------------------- */
-		/* check and warn if already running       */
-
-		bool already_running = false;
-		RunOnceMutex rom = GetRunOnceMutex(already_running);
-
-		if (already_running && !multi) {
-			blog(LOG_WARNING, "\n================================");
-			blog(LOG_WARNING, "Warning: OBS is already running!");
-			blog(LOG_WARNING, "================================\n");
-
-			QMessageBox::StandardButtons buttons(
-					QMessageBox::Yes | QMessageBox::Cancel);
-			QMessageBox mb(QMessageBox::Question,
-					QTStr("AlreadyRunning.Title"),
-					QTStr("AlreadyRunning.Text"),
-					buttons,
-					nullptr);
-			mb.setButtonText(QMessageBox::Yes,
-					QTStr("AlreadyRunning.LaunchAnyway"));
-			mb.setButtonText(QMessageBox::Cancel, QTStr("Cancel"));
-			mb.setDefaultButton(QMessageBox::Cancel);
-
-			QMessageBox::StandardButton button;
-			button = (QMessageBox::StandardButton)mb.exec();
-			if (button == QMessageBox::Cancel) {
-				blog(LOG_INFO, "User shut down the program "
-						"because OBS was already "
-						"running");
-				return 0;
-			}
-
-			blog(LOG_WARNING, "User is now running a secondary "
-					"instance of OBS!");
-
-		} else if (already_running && multi) {
-			blog(LOG_INFO, "User enabled --multi flag and is now "
-					"running multiple instances of OBS.");
-		}
-
-		/* --------------------------------------- */
-#endif
 
 		if (!program.OBSInit())
 			return 0;
 
-		prof.Stop();
+//		prof.Stop();
 
 		return program.exec();
 
 	} catch (const char *error) {
 		blog(LOG_ERROR, "%s", error);
-		OBSErrorBox(nullptr, "%s", error);
+//		OBSErrorBox(nullptr, "%s", error);
 	}
 
 	return ret;
@@ -1845,106 +1802,36 @@ int main(int argc, char *argv[])
 	signal(SIGPIPE, SIG_IGN);
 #endif
 
-#ifdef _WIN32
-	SetErrorMode(SEM_FAILCRITICALERRORS);
-	load_debug_privilege();
-	base_set_crash_handler(main_crash_handler, nullptr);
-#endif
+//#ifdef _WIN32
+//	SetErrorMode(SEM_FAILCRITICALERRORS);
+//	load_debug_privilege();
+//	base_set_crash_handler(main_crash_handler, nullptr);
+//#endif
 
-	base_get_log_handler(&def_log_handler, nullptr);
+//	base_get_log_handler(&def_log_handler, nullptr);
 
-#if defined(USE_XDG) && defined(IS_UNIX)
-	move_to_xdg();
-#endif
+//#if defined(USE_XDG) && defined(IS_UNIX)
+//	move_to_xdg();
+//#endif
 
-	for (int i = 1; i < argc; i++) {
-		if (arg_is(argv[i], "--portable", "-p")) {
-			portable_mode = true;
 
-		} else if (arg_is(argv[i], "--multi", "-m")) {
-			multi = true;
 
-		} else if (arg_is(argv[i], "--verbose", nullptr)) {
-			log_verbose = true;
+//#if !OBS_UNIX_STRUCTURE
+//	if (!portable_mode) {
+//		portable_mode =
+//			os_file_exists(BASE_PATH "/portable_mode") ||
+//			os_file_exists(BASE_PATH "/obs_portable_mode") ||
+//			os_file_exists(BASE_PATH "/portable_mode.txt") ||
+//			os_file_exists(BASE_PATH "/obs_portable_mode.txt");
+//	}
+//#endif
 
-		} else if (arg_is(argv[i], "--always-on-top", nullptr)) {
-			opt_always_on_top = true;
+//	upgrade_settings();
 
-		} else if (arg_is(argv[i], "--unfiltered_log", nullptr)) {
-			unfiltered_log = true;
+//	fstream logFile;
 
-		} else if (arg_is(argv[i], "--startstreaming", nullptr)) {
-			opt_start_streaming = true;
-
-		} else if (arg_is(argv[i], "--startrecording", nullptr)) {
-			opt_start_recording = true;
-
-		} else if (arg_is(argv[i], "--startreplaybuffer", nullptr)) {
-			opt_start_replaybuffer = true;
-
-		} else if (arg_is(argv[i], "--collection", nullptr)) {
-			if (++i < argc) opt_starting_collection = argv[i];
-
-		} else if (arg_is(argv[i], "--profile", nullptr)) {
-			if (++i < argc) opt_starting_profile = argv[i];
-
-		} else if (arg_is(argv[i], "--scene", nullptr)) {
-			if (++i < argc) opt_starting_scene = argv[i];
-
-		} else if (arg_is(argv[i], "--minimize-to-tray", nullptr)) {
-			opt_minimize_tray = true;
-
-		} else if (arg_is(argv[i], "--studio-mode", nullptr)) {
-			opt_studio_mode = true;
-
-		} else if (arg_is(argv[i], "--allow-opengl", nullptr)) {
-			opt_allow_opengl = true;
-
-		} else if (arg_is(argv[i], "--help", "-h")) {
-			std::cout <<
-			"--help, -h: Get list of available commands.\n\n" << 
-			"--startstreaming: Automatically start streaming.\n" <<
-			"--startrecording: Automatically start recording.\n" <<
-			"--startreplaybuffer: Start replay buffer.\n\n" <<
-			"--collection <string>: Use specific scene collection."
-				<< "\n" <<
-			"--profile <string>: Use specific profile.\n" <<
-			"--scene <string>: Start with specific scene.\n\n" <<
-			"--studio-mode: Enable studio mode.\n" <<
-			"--minimize-to-tray: Minimize to system tray.\n" <<
-			"--portable, -p: Use portable mode.\n" <<
-			"--multi, -m: Don't warn when launching multiple instances.\n\n" <<
-			"--verbose: Make log more verbose.\n" <<
-			"--always-on-top: Start in 'always on top' mode.\n\n" <<
-			"--unfiltered_log: Make log unfiltered.\n\n" <<
-			"--allow-opengl: Allow OpenGL on Windows.\n\n" <<
-			"--version, -V: Get current version.\n";
-
-			exit(0);
-
-		} else if (arg_is(argv[i], "--version", "-V")) {
-			std::cout << "OBS Studio - " << 
-				App()->GetVersionString() << "\n";
-			exit(0);
-		}
-	}
-
-#if !OBS_UNIX_STRUCTURE
-	if (!portable_mode) {
-		portable_mode =
-			os_file_exists(BASE_PATH "/portable_mode") ||
-			os_file_exists(BASE_PATH "/obs_portable_mode") ||
-			os_file_exists(BASE_PATH "/portable_mode.txt") ||
-			os_file_exists(BASE_PATH "/obs_portable_mode.txt");
-	}
-#endif
-
-	upgrade_settings();
-
-	fstream logFile;
-
-	curl_global_init(CURL_GLOBAL_ALL);
-	int ret = run_program(logFile, argc, argv);
+//	curl_global_init(CURL_GLOBAL_ALL);
+    int ret = run_program(argc, argv);
 
 	blog(LOG_INFO, "Number of memory leaks: %ld", bnum_allocs());
 	base_set_log_handler(nullptr, nullptr);

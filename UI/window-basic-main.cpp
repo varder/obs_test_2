@@ -1229,14 +1229,14 @@ void OBSBasic::ReplayBufferClicked()
 //		StopReplayBuffer();
 //	else
 		StartReplayBuffer();
-};
+}
 #include <QDebug>
 static void mcb(void *param, struct video_data *frame){
     qDebug() << "CCCCBBB" << !!frame << frame->data[0] << frame->data;
 
     static bool isIn = true;
     static int cr = 0;
-    if(++cr>100){
+    if(++cr>30){
         cr = 0;
         isIn = false;
     }
