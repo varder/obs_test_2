@@ -79,12 +79,12 @@ static void do_log(int log_level, const char *msg, va_list args, void *param)
 
 static void CreateOBS(HWND hwnd)
 {
-	RECT rc;
+    RECT rc;
 	GetClientRect(hwnd, &rc);
 
 	if (!obs_startup("en-US", nullptr, nullptr))
 		throw "Couldn't create OBS";
-
+//    throw "obs started ";
 	struct obs_video_info ovi;
 	ovi.adapter         = 0;
 	ovi.base_width      = rc.right;
@@ -96,14 +96,24 @@ static void CreateOBS(HWND hwnd)
 	ovi.output_width    = rc.right;
 	ovi.output_height   = rc.bottom;
 
-	if (obs_reset_video(&ovi) != 0)
-		throw "Couldn't initialize video";
+        char szBuff[64];
+//        throw szBuff;
+
+    if (int res = obs_reset_video(&ovi) != 0){
+        sprintf(szBuff, "res %d " , res);
+        throw szBuff;
+    }
+
+//    FILE *fptr;
+//    fptr = fopen("testLog.txt", "w");
+//    fprintf(fptr,"%s", "sentence test");
 }
 
 static DisplayContext CreateDisplay(HWND hwnd)
 {
 	RECT rc;
 	GetClientRect(hwnd, &rc);
+
 
 	gs_init_data info = {};
 	info.cx = rc.right;
@@ -136,14 +146,27 @@ static HWND CreateTestWindow(HINSTANCE instance)
 	wc.hInstance     = instance;
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.lpfnWndProc   = (WNDPROC)sceneProc;
+    if (!RegisterClass(&wc)){
+        return 0;
+    }
 
-	if (!RegisterClass(&wc))
-		return 0;
-
-	return CreateWindow(TEXT("bla"), TEXT("bla"),
+    char message[30];
+//    __FUNCTION__;
+//    CreateWindowW
+    HWND hwnd = CreateWindow(TEXT("bla"), TEXT("bla"),
 			WS_OVERLAPPEDWINDOW|WS_VISIBLE,
-			1920/2 - cx/2, 1080/2 - cy/2, cx, cy,
+            1000, 800, cx, cy,
 			NULL, NULL, instance, NULL);
+
+//    snprintf(message, sizeof(message), "CreateWindow NOT valid? %d", (int*)hwnd);
+//    throw message;
+//    char szBuff[64];
+//    HWND hwnd1;
+//    sprintf(szBuff, "%p    %p", hwnd, hwnd1);
+//    throw szBuff;
+//    MessageBox(NULL, szBuff, "Title", MB_OK);
+
+    return hwnd;
 }
 
 /* --------------------------------------------------- */
@@ -167,8 +190,8 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 
 	try {
 		hwnd = CreateTestWindow(instance);
-		if (!hwnd)
-			throw "Couldn't create main window";
+        if (!hwnd)
+            throw "Couldn't create main window1";
 
 		/* ------------------------------------------------------ */
 		/* create OBS */
@@ -230,3 +253,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 	UNUSED_PARAMETER(numCmd);
 	return 0;
 }
+
+//int main(int argc, char *argv[]){
+
+//}

@@ -228,6 +228,7 @@ gs_effect_t *obs_load_effect(gs_effect_t **effect, const char *file)
 
 static int obs_init_graphics(struct obs_video_info *ovi)
 {
+
 	struct obs_core_video *video = &obs->video;
 	uint8_t transparent_tex_data[2*2*4] = {0};
 	const uint8_t *transparent_tex = transparent_tex_data;
@@ -237,6 +238,7 @@ static int obs_init_graphics(struct obs_video_info *ovi)
 
 	errorcode = gs_create(&video->graphics, ovi->graphics_module,
 			ovi->adapter);
+
 	if (errorcode != GS_SUCCESS) {
 		switch (errorcode) {
 		case GS_ERROR_MODULE_NOT_FOUND:
@@ -248,9 +250,16 @@ static int obs_init_graphics(struct obs_video_info *ovi)
 		}
 	}
 
+
+
 	gs_enter_context(video->graphics);
 
+
+
 	char *filename = find_libobs_data_file("default.effect");
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr,"\n ++++  created from file default.effect %s", filename);
 	video->default_effect = gs_effect_create_from_file(filename,
 			NULL);
 	bfree(filename);
@@ -947,9 +956,16 @@ int obs_reset_video(struct obs_video_info *ovi)
 		int errorcode = obs_init_graphics(ovi);
 		if (errorcode != OBS_VIDEO_SUCCESS) {
 			obs_free_graphics();
+            FILE *fptr;
+            fptr = fopen("testLog.txt", "a");
+            fprintf(fptr,"error code vgs %d", errorcode);
 			return errorcode;
 		}
 	}
+
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr,"%s", "try section 2");
 
 	const char *scale_type_name = "";
 	switch (ovi->scale_type) {
