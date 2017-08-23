@@ -297,6 +297,12 @@ static obs_source_t *obs_source_create_internal(const char *id,
 	struct obs_source *source = bzalloc(sizeof(struct obs_source));
 
 	const struct obs_source_info *info = get_source_info(id);
+
+
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr,"obs_source_create_internal \n");
+
 	if (!info) {
 		blog(LOG_ERROR, "Source ID '%s' not found", id);
 

@@ -74,6 +74,11 @@ static void do_log(int log_level, const char *msg, va_list args, void *param)
 	if (log_level < LOG_WARNING)
 		__debugbreak();
 
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr, bla);
+
+
 	UNUSED_PARAMETER(param);
 }
 
@@ -82,7 +87,7 @@ static void CreateOBS(HWND hwnd)
     RECT rc;
 	GetClientRect(hwnd, &rc);
 
-	if (!obs_startup("en-US", nullptr, nullptr))
+    if (!obs_startup("en-US", R"_(C:\Users\varder\AppData\Roaming\obs-studio/plugin_config)_", nullptr))
 		throw "Couldn't create OBS";
 //    throw "obs started ";
 	struct obs_video_info ovi;
@@ -96,8 +101,8 @@ static void CreateOBS(HWND hwnd)
 	ovi.output_width    = rc.right;
 	ovi.output_height   = rc.bottom;
 
-        char szBuff[64];
-//        throw szBuff;
+    char szBuff[64];
+//        throw "try to reset video";
 
     if (int res = obs_reset_video(&ovi) != 0){
         sprintf(szBuff, "res %d " , res);
@@ -118,7 +123,7 @@ static DisplayContext CreateDisplay(HWND hwnd)
 	gs_init_data info = {};
 	info.cx = rc.right;
 	info.cy = rc.bottom;
-	info.format = GS_RGBA;
+    info.format = GS_RGBA;
 	info.zsformat = GS_ZS_NONE;
 	info.window.hwnd = hwnd;
 
@@ -150,21 +155,10 @@ static HWND CreateTestWindow(HINSTANCE instance)
         return 0;
     }
 
-    char message[30];
-//    __FUNCTION__;
-//    CreateWindowW
     HWND hwnd = CreateWindow(TEXT("bla"), TEXT("bla"),
 			WS_OVERLAPPEDWINDOW|WS_VISIBLE,
             1000, 800, cx, cy,
 			NULL, NULL, instance, NULL);
-
-//    snprintf(message, sizeof(message), "CreateWindow NOT valid? %d", (int*)hwnd);
-//    throw message;
-//    char szBuff[64];
-//    HWND hwnd1;
-//    sprintf(szBuff, "%p    %p", hwnd, hwnd1);
-//    throw szBuff;
-//    MessageBox(NULL, szBuff, "Title", MB_OK);
 
     return hwnd;
 }
@@ -182,6 +176,55 @@ static void RenderWindow(void *data, uint32_t cx, uint32_t cy)
 
 /* --------------------------------------------------- */
 
+
+
+class TestClass{
+public:
+
+    static void SourceLoaded(void *data, obs_source_t *source)
+    {
+//       blog(LOG_INFO, "loaded source 11111");
+    //   obs_scene_t *scene = obs_scene_from_source(source);
+    //   obs_source_get_name(source);
+    //   if(strcmp(obs_source_get_name(source), "scene4")==0){
+    //        obs_source_inc_showing(source);
+    //        obs_scene_addref(scene);
+    //        obs_set_output_source(0, source);
+    //   }
+    //   if(obs_source_active(obs_scene_get_source(scene) )){
+    //   }
+
+    }
+    void Load(const char *file1)
+    {
+
+        const char *file = R"_(C:\Users\v.chubar\AppData\Roaming\obs-studio/basic/scenes/varder.json)_";
+    //        const char *file = R"_(C:\Users\varder\AppData\Roaming\obs-studio/basic/scenes/varder.json)_";
+        obs_data_t *data = nullptr;
+        data = obs_data_create_from_json_file_safe(file, "bak");
+        if(!data){
+            return;
+        }
+        const char *sceneName = obs_data_get_string(data, "current_scene");
+        obs_data_array_t *sources    = obs_data_get_array(data, "sources");
+
+
+        obs_source_t     *curScene = nullptr;
+        curScene = obs_get_source_by_name("scene4");
+        blog(LOG_INFO, "loaded  curr scene4 ==> gg%d", !!curScene);
+//        obs_load_sources(sources, TestClass::SourceLoaded, nullptr);
+
+//        obs_load_sources(sources, TestClass::SourceLoaded, this);
+
+
+        //    obs_scene_t *scene = obs_scene_from_source(curProgramScene);
+        //    obs_source_t *transition = obs_get_output_source(0);
+        //    obs_transition_set(transition, curProgramScene);
+
+    }
+
+};
+
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 		int numCmd)
 {
@@ -189,7 +232,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 	base_set_log_handler(do_log, nullptr);
 
 	try {
-		hwnd = CreateTestWindow(instance);
+        hwnd = CreateTestWindow(instance);
         if (!hwnd)
             throw "Couldn't create main window1";
 
@@ -197,41 +240,62 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 		/* create OBS */
 		CreateOBS(hwnd);
 
+
 		/* ------------------------------------------------------ */
 		/* load modules */
 		obs_load_all_modules();
 
-		/* ------------------------------------------------------ */
+        /* ----------------------------------------------------- */
 		/* create source */
-		SourceContext source = obs_source_create("random",
-				"some randon source", NULL, nullptr);
-		if (!source)
-			throw "Couldn't create random test source";
+        blog(LOG_INFO, "--------------------------------- LOG MODULES");
+        obs_log_loaded_modules();
+
+
+        blog(LOG_INFO, "--------------------------------- POST MODULES");
+        obs_post_load_modules();
+        blog(LOG_INFO, "--------------------------------- POST MODULES <<<<<<<<");
+        blog(LOG_INFO, "STA=======================");
+
+
+
+//        throw "modules loaded ";
+//		SourceContext source = obs_source_create("random",
+//				"some randon source", NULL, nullptr);
+//        throw "obs modules loaded ";
+//		if (!source)
+//			throw "Couldn't create random test source";
 
 		/* ------------------------------------------------------ */
 		/* create filter */
-		SourceContext filter = obs_source_create("test_filter",
-				"a nice green filter", NULL, nullptr);
-		if (!filter)
-			throw "Couldn't create test filter";
-		obs_source_filter_add(source, filter);
+//        SourceContext filter = obs_source_create("test_filter",
+//                "a nice green filter", NULL, nullptr);
+//		if (!filter)
+//			throw "Couldn't create test filter";
+//		obs_source_filter_add(source, filter);
 
 		/* ------------------------------------------------------ */
 		/* create scene and add source to scene (twice) */
-		SceneContext scene = obs_scene_create("test scene");
-		if (!scene)
-			throw "Couldn't create scene";
+        SceneContext scene = obs_scene_create("test scene");
+        if (!scene)
+            throw "Couldn't create scene";
 
-		AddTestItems(scene, source);
+//        AddTestItems(scene, source);
 
 		/* ------------------------------------------------------ */
 		/* set the scene as the primary draw source and go */
-		obs_set_output_source(0, obs_scene_get_source(scene));
-
+        obs_set_output_source(0, obs_scene_get_source(scene));
+        TestClass tc;
+        tc.Load("");
 		/* ------------------------------------------------------ */
 		/* create display for output and set the output render callback */
+//        throw "not try to make display";
+
 		DisplayContext display = CreateDisplay(hwnd);
 		obs_display_add_draw_callback(display, RenderWindow, nullptr);
+
+
+
+
 
 		MSG msg;
 		while (GetMessage(&msg, NULL, 0, 0)) {
@@ -239,10 +303,13 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 			DispatchMessage(&msg);
 		}
 
+
+
 	} catch (char *error) {
 		MessageBoxA(NULL, error, NULL, 0);
 	}
 
+    blog(LOG_INFO, "now shut douwn prog \n");
 	obs_shutdown();
 
 	blog(LOG_INFO, "Number of memory leaks: %ld", bnum_allocs());
@@ -254,6 +321,3 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR cmdLine,
 	return 0;
 }
 
-//int main(int argc, char *argv[]){
-
-//}

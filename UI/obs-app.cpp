@@ -326,24 +326,24 @@ static void do_log(int log_level, const char *msg, va_list args, void *param)
 	vsnprintf(str, 4095, msg, args);
 
 #ifdef _WIN32
-	if (IsDebuggerPresent()) {
-		int wNum = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
-		if (wNum > 1) {
-			static wstring wide_buf;
-			static mutex wide_mutex;
+    if (IsDebuggerPresent()) {
+        int wNum = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+        if (wNum > 1) {
+            static wstring wide_buf;
+            static mutex wide_mutex;
 
-			lock_guard<mutex> lock(wide_mutex);
-			wide_buf.reserve(wNum + 1);
-			wide_buf.resize(wNum - 1);
-			MultiByteToWideChar(CP_UTF8, 0, str, -1, &wide_buf[0],
-					wNum);
-			wide_buf.push_back('\n');
+            lock_guard<mutex> lock(wide_mutex);
+            wide_buf.reserve(wNum + 1);
+            wide_buf.resize(wNum - 1);
+            MultiByteToWideChar(CP_UTF8, 0, str, -1, &wide_buf[0],
+                    wNum);
+            wide_buf.push_back('\n');
 
-			OutputDebugStringW(wide_buf.c_str());
-		}
-	}
+            OutputDebugStringW(wide_buf.c_str());
+        }
+    }
 #else
-	def_log_handler(log_level, msg, args2, nullptr);
+    def_log_handler(log_level, msg, args2, nullptr);
 #endif
 
 	if (log_level <= LOG_INFO || log_verbose) {
@@ -1242,8 +1242,8 @@ static void create_log_file(fstream &logFile)
 #endif
 
 	if (logFile.is_open()) {
-		delete_oldest_file("obs-studio/logs");
-		base_set_log_handler(do_log, &logFile);
+//		delete_oldest_file("obs-studio/logs");
+//		base_set_log_handler(do_log, &logFile);
 	} else {
 		blog(LOG_ERROR, "Failed to open log file");
 	}
@@ -1839,8 +1839,29 @@ static void upgrade_settings(void)
 	os_closedir(dir);
 }
 
+static void do_log1(int log_level, const char *msg, va_list args, void *param)
+{
+    char bla[4096];
+    vsnprintf(bla, 4095, msg, args);
+
+    OutputDebugStringA(bla);
+    OutputDebugStringA("\n");
+
+    if (log_level < LOG_WARNING)
+        __debugbreak();
+
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr, bla);
+
+
+    UNUSED_PARAMETER(param);
+}
+
 int main(int argc, char *argv[])
 {
+
+    base_set_log_handler(do_log1, nullptr);
 #ifndef _WIN32
 	signal(SIGPIPE, SIG_IGN);
 #endif
@@ -1947,6 +1968,6 @@ int main(int argc, char *argv[])
 	int ret = run_program(logFile, argc, argv);
 
 	blog(LOG_INFO, "Number of memory leaks: %ld", bnum_allocs());
-	base_set_log_handler(nullptr, nullptr);
+//    base_set_log_handler(do_log, nullptr);
 	return ret;
 }

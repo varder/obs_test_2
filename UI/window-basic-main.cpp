@@ -2773,7 +2773,7 @@ int OBSBasic::ResetVideo()
 	const char *colorRange = config_get_string(basicConfig, "Video",
 			"ColorRange");
 
-	ovi.graphics_module = App()->GetRenderModule();
+    ovi.graphics_module = DL_OPENGL;//DL_D3D11  ;//DL_OPENGL ;//App()->GetRenderModule();
 	ovi.base_width     = (uint32_t)config_get_uint(basicConfig,
 			"Video", "BaseCX");
 	ovi.base_height    = (uint32_t)config_get_uint(basicConfig,

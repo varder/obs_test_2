@@ -108,6 +108,11 @@ int obs_open_module(obs_module_t **module, const char *path,
 		blog(LOG_DEBUG, "Loading module: %s", mod.file);
 	}
 
+    FILE *fptr;
+    fptr = fopen("testLog.txt", "a");
+    fprintf(fptr,"load moudle %s\n" , mod.file);
+
+
 	*module = bmemdup(&mod, sizeof(mod));
 	obs->first_module = (*module);
 	mod.set_pointer(*module);

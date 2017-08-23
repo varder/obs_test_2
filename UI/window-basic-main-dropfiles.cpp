@@ -50,7 +50,7 @@ static string GenerateSourceName(const char *base)
 
 		if (inc) {
 			name += " (";
-			name += to_string(inc+1);
+            name += to_string(inc+1);
 			name += ")";
 		}
 
@@ -62,6 +62,7 @@ static string GenerateSourceName(const char *base)
 
 void OBSBasic::AddDropSource(const char *data, DropType image)
 {
+    blog(LOG_WARNING, "addDropSource %s", data);
 	OBSBasic *main = reinterpret_cast<OBSBasic*>(App()->GetMainWindow());
 	obs_data_t *settings = obs_data_create();
 	obs_source_t *source = nullptr;
@@ -112,6 +113,7 @@ void OBSBasic::AddDropSource(const char *data, DropType image)
 
 	if (name.isEmpty())
 		name = obs_source_get_display_name(type);
+    blog(LOG_WARNING, "string GenerateSourceName %s ", GenerateSourceName(QT_TO_UTF8(name)).c_str());
 	source = obs_source_create(type,
 			GenerateSourceName(QT_TO_UTF8(name)).c_str(),
 			settings, nullptr);
