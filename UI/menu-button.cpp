@@ -19,7 +19,7 @@ void MenuButton::keyPressEvent(QKeyEvent *event)
 
 	QPushButton::keyPressEvent(event);
 }
-
+#include <QDebug>
 void MenuButton::mousePressEvent(QMouseEvent *event)
 {
 	if (menu()) {
@@ -30,4 +30,5 @@ void MenuButton::mousePressEvent(QMouseEvent *event)
 	} else {
 		QPushButton::mousePressEvent(event);
 	}
+    qDebug() <<  "mouse pressed ";
 }

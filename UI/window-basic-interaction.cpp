@@ -39,6 +39,7 @@ OBSBasicInteraction::OBSBasicInteraction(QWidget *parent, OBSSource source_)
 	                 OBSBasicInteraction::SourceRenamed, this),
 	  eventFilter   (BuildEventFilter())
 {
+    blog(LOG_WARNING, "basic intr ctr ");
 	int cx = (int)config_get_int(App()->GlobalConfig(), "InteractionWindow",
 			"cx");
 	int cy = (int)config_get_int(App()->GlobalConfig(), "InteractionWindow",
@@ -249,6 +250,7 @@ bool OBSBasicInteraction::GetSourceRelativeXY(
 bool OBSBasicInteraction::HandleMouseClickEvent(
 	QMouseEvent *event)
 {
+    blog(LOG_ERROR, "error log on click ");
 	bool mouseUp = event->type() == QEvent::MouseButtonRelease;
 	int clickCount = 1;
 	if (event->type() == QEvent::MouseButtonDblClick)
@@ -289,7 +291,7 @@ bool OBSBasicInteraction::HandleMouseClickEvent(
 
 	return true;
 }
-
+#include <QDebug>
 bool OBSBasicInteraction::HandleMouseMoveEvent(QMouseEvent *event)
 {
 	struct obs_mouse_event mouseEvent = {};
@@ -301,8 +303,9 @@ bool OBSBasicInteraction::HandleMouseMoveEvent(QMouseEvent *event)
 		mouseLeave = !GetSourceRelativeXY(event->x(), event->y(),
 				mouseEvent.x, mouseEvent.y);
 	}
-
+	blog(LOG_WARNING, "mouse event__>>>> ");
 	obs_source_send_mouse_move(source, &mouseEvent, mouseLeave);
+	qDebug() << "mouse event--<<<< ";
 
 	return true;
 }

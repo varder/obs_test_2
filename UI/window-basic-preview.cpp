@@ -430,6 +430,8 @@ void OBSBasicPreview::wheelEvent(QWheelEvent *event)
 
 void OBSBasicPreview::mousePressEvent(QMouseEvent *event)
 {
+//	qDebug() << "mouse press event ";
+    blog(LOG_WARNING, "log press event ");
 	if (scrollMode && IsFixedScaling() &&
 	    event->button() == Qt::LeftButton) {
 		setCursor(Qt::ClosedHandCursor);
@@ -669,6 +671,7 @@ void OBSBasicPreview::SnapItemMovement(vec2 &offset)
 	const float clampDist = config_get_double(GetGlobalConfig(),
 			"BasicWindow", "SnapDistance") / main->previewScale;
 
+
 	OffsetData offsetData;
 	offsetData.clampDist = clampDist;
 	offsetData.tl = data.tl;
@@ -676,6 +679,7 @@ void OBSBasicPreview::SnapItemMovement(vec2 &offset)
 	vec3_copy(&offsetData.offset, &snapOffset);
 
 	obs_scene_enum_items(scene, GetSourceSnapOffset, &offsetData);
+//    blog(LOG_WARNING, "snap move %f %d ", clampDist, snapOffset.y);
 
 	if (fabsf(offsetData.offset.x) > EPSILON ||
 	    fabsf(offsetData.offset.y) > EPSILON) {
@@ -693,6 +697,8 @@ static bool move_items(obs_scene_t *scene, obs_sceneitem_t *item, void *param)
 		return true;
 
 	vec2 *offset = reinterpret_cast<vec2*>(param);
+
+//     blog(LOG_WARNING, "move_items offset %f %d ", offset->x, offset->y);
 
 	if (obs_sceneitem_selected(item)) {
 		vec2 pos;
@@ -721,6 +727,8 @@ void OBSBasicPreview::MoveItems(const vec2 &pos)
 	vec2_add(&lastMoveOffset, &lastMoveOffset, &moveOffset);
 
 	obs_scene_enum_items(scene, move_items, &moveOffset);
+
+//    blog(LOG_WARNING, "move_items offset %s ",  );
 }
 
 vec3 OBSBasicPreview::CalculateStretchPos(const vec3 &tl, const vec3 &br)
@@ -996,6 +1004,7 @@ void OBSBasicPreview::StretchItem(const vec2 &pos)
 
 	obs_source_t *source = obs_sceneitem_get_source(stretchItem);
 
+
 	vec2 baseSize;
 	vec2_set(&baseSize,
 		float(obs_source_get_width(source)),
@@ -1013,7 +1022,7 @@ void OBSBasicPreview::StretchItem(const vec2 &pos)
 
 		vec2_abs(&size, &size);
 
-		obs_sceneitem_set_bounds(stretchItem, &size);
+        obs_sceneitem_set_bounds(stretchItem, &size);
 	} else {
 		obs_sceneitem_crop crop;
 		obs_sceneitem_get_crop(stretchItem, &crop);
@@ -1025,19 +1034,26 @@ void OBSBasicPreview::StretchItem(const vec2 &pos)
 			ClampAspect(tl, br, size, baseSize);
 
 		vec2_div(&size, &size, &baseSize);
-		obs_sceneitem_set_scale(stretchItem, &size);
+        obs_sceneitem_set_scale(stretchItem, &size);
+        blog(LOG_WARNING, "stretch size %f %f", size.x, size.y);
 	}
 
+//    return;
 	pos3 = CalculateStretchPos(tl, br);
+
+
 	vec3_transform(&pos3, &pos3, &itemToScreen);
 
 	vec2 newPos;
 	vec2_set(&newPos, std::round(pos3.x), std::round(pos3.y));
 	obs_sceneitem_set_pos(stretchItem, &newPos);
+    blog(LOG_WARNING, "stretch Item %f %f", newPos.x, newPos.y);
 }
 
 void OBSBasicPreview::mouseMoveEvent(QMouseEvent *event)
 {
+    return;
+    blog(LOG_WARNING, " mouse move %d", event->x());
 	if (scrollMode && event->buttons() == Qt::LeftButton) {
 		scrollingOffset.x += event->x() - scrollingFrom.x;
 		scrollingOffset.y += event->y() - scrollingFrom.y;

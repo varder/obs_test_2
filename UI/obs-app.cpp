@@ -312,7 +312,7 @@ static inline bool too_many_repeated_entries(fstream &logFile, const char *msg,
 
 	return false;
 }
-
+#include <QDebug>
 static void do_log(int log_level, const char *msg, va_list args, void *param)
 {
 	fstream &logFile = *static_cast<fstream*>(param);
@@ -356,6 +356,7 @@ static void do_log(int log_level, const char *msg, va_list args, void *param)
 	if (log_level <= LOG_ERROR && IsDebuggerPresent())
 		__debugbreak();
 #endif
+     qDebug() << str;
 }
 
 #define DEFAULT_LANG "en-US"
@@ -928,6 +929,7 @@ static bool StartupOBS(const char *locale, profiler_name_store_t *store)
 bool OBSApp::OBSInit()
 {
 	ProfileScope("OBSApp::OBSInit");
+    qDebug() << "app init 9999";
 
 	bool licenseAccepted = config_get_bool(globalConfig, "General",
 			"LicenseAccepted");
