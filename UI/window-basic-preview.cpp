@@ -1052,9 +1052,8 @@ void OBSBasicPreview::StretchItem(const vec2 &pos)
 
 void OBSBasicPreview::mouseMoveEvent(QMouseEvent *event)
 {
-    return;
-    blog(LOG_WARNING, " mouse move %d", event->x());
 	if (scrollMode && event->buttons() == Qt::LeftButton) {
+        blog(LOG_WARNING, " mouse move %d %d", event->x(), event->y());
 		scrollingOffset.x += event->x() - scrollingFrom.x;
 		scrollingOffset.y += event->y() - scrollingFrom.y;
 		scrollingFrom.x = event->x();
@@ -1067,6 +1066,7 @@ void OBSBasicPreview::mouseMoveEvent(QMouseEvent *event)
 		return;
 
 	if (mouseDown) {
+        blog(LOG_WARNING, " mouse dwn %d %d", event->x(), event->y());
 		vec2 pos = GetMouseEventPos(event);
 
 		if (!mouseMoved && !mouseOverItems &&
@@ -1079,13 +1079,14 @@ void OBSBasicPreview::mouseMoveEvent(QMouseEvent *event)
 		pos.y = std::round(pos.y);
 
 		if (stretchHandle != ItemHandle::None) {
-			if (cropping)
+            if (cropping)
 				CropItem(pos);
 			else
 				StretchItem(pos);
 
 		} else if (mouseOverItems) {
 			MoveItems(pos);
+            blog(LOG_WARNING, " mouse stretchHandle %d %d", event->x(), event->y());
 		}
 
 		mouseMoved = true;
